@@ -61,7 +61,7 @@ app.post("/student", (req, res) => {
 });
 
 app.post("/doctor", (req, res) => {
-    newDoctor = req.body
+    const newDoctor = req.query;
     const expectedFields = ["name", "age", "phone"];
 
     const extraFields = Object.keys(newDoctor)
