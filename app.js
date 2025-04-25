@@ -2,30 +2,36 @@ const express = require("express");
 const app = express();
 const PORT = 8080;
 
-let students = []
-let doctors = []
+const mongoose = require("mongoose");
+const students=require("./students");
+const doctors=require("./doctor");
+const db=require("./db");
 
 app.use(express.json())
 
-app.post("/student/hardcoded", (req, res) => {
+app.post("/student/hardcoded", async (req, res) => {
     const newStudent = {
         name: "Ahmed",
         age: 20,
         level: "Sophomore",
         address: "Nowhere" 
     };
-
-    students.push(newStudent);
-    console.log(students);
+    try{
+        const addedStudent = await students(newStudent).save();
+        res.status(200).json({
+            message: "Student added successfully",
+            student: addedStudent
+        });
+    }
+    catch (error) {
+        res.status(400).json({
+            message: error.message
+        });
+    }
     
-    // 201 Created 
-    res.status(201).json({
-        message: 'Student added successfully!',
-        data: newStudent
-    });
 }) 
 
-app.post("/student", (req, res) => {
+app.post("/student", async (req, res) => {
     newStudent = req.body
     const expectedFields = ["name", "age", "level", "address"];
 
@@ -50,17 +56,16 @@ app.post("/student", (req, res) => {
         });
     }
     
-    students.push(newStudent)
-    console.log(students);
-
+    
+    const addedStudent = await students(newStudent).save();
     // 201 Created 
     res.status(201).json({
         message: 'Student added successfully!',
-        data: newStudent
+        data: addedStudent
     })
 });
 
-app.post("/doctor", (req, res) => {
+app.post("/doctor", async (req, res) => {
     const newDoctor = req.query;
     const expectedFields = ["name", "age", "phone"];
 
@@ -83,13 +88,11 @@ app.post("/doctor", (req, res) => {
         });
     }
     
-    doctors.push(newDoctor)
-    console.log(doctors);
-
+    const addedDoctor = await doctors(newDoctor);
     // 201 Created 
     res.status(201).json({
         message: 'Doctor added successfully!',
-        data: newDoctor 
+        data: addedDoctor
     });
 });
 
